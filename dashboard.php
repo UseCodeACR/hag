@@ -17,7 +17,35 @@ session_start();
 		color: black;
 	}
 	</style>
+  
     <script>
+      function mapload(){
+      
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+          var location = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        };
+      var map = new google.maps.Map(document.getElementById('map'), {
+        center: location,
+        zoom: 10
+      });
+      // Make request to AirVisual API to get air quality data
+      // ...
+    }, function() {
+      alert('Geolocation failed. Please enter a postcode to get air quality data.');
+    });
+  } else {
+    alert('Geolocation is not supported by this browser. Please enter a postcode to get air quality data.');
+  }
+}
+
+
+      window.onload = function() {
+        mapload();
+      };
+
       function initMap() {
         var geocoder = new google.maps.Geocoder();
         var address = document.getElementById('postcode').value;
@@ -28,7 +56,6 @@ session_start();
               center: location,
               zoom: 10
             });
-
             // Make request to AirVisual API to get air quality data
             var xhr = new XMLHttpRequest();
             xhr.open('GET', 'https://api.airvisual.com/v2/nearest_city?key=fc530c3a-1e3d-4e19-afa4-74045818d1f1&lat=' + location.lat() + '&lon=' + location.lng());
@@ -85,6 +112,7 @@ session_start();
   </head>
   <body>
 	  <?php require dirname(__FILE__). "/templates/nav.php"; ?>
+    
 	<h1>Air Quality Map</h1>
 
   <form>
